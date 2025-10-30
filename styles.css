@@ -5,15 +5,17 @@
 }
 
 :root {
-  --primary-color: #1f2937;
+  --primary-color: #0f172a;
   --accent-color: #3b82f6;
+  --accent-hover: #2563eb;
   --accent-light: #eff6ff;
   --success-color: #10b981;
   --error-color: #ef4444;
   --border-color: #e5e7eb;
   --text-color: #111827;
   --text-secondary: #6b7280;
-  --bg-light: #f9fafb;
+  --bg-light: #f8fafc;
+  --bg-white: #ffffff;
 }
 
 html {
@@ -40,22 +42,24 @@ body {
 }
 
 header {
-  background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+  background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
   color: white;
-  padding: 20px;
+  padding: 24px 20px;
   text-align: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
 }
 
 header h1 {
-  font-size: 24px;
-  font-weight: 700;
-  margin-bottom: 5px;
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 4px;
+  letter-spacing: -0.5px;
 }
 
 header .subtitle {
-  font-size: 14px;
-  opacity: 0.9;
+  font-size: 13px;
+  opacity: 0.85;
+  font-weight: 500;
 }
 
 main {
@@ -108,12 +112,39 @@ main {
   }
 }
 
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
 .status p {
   color: var(--accent-color);
   font-size: 18px;
   font-weight: 500;
   animation: pulse 1.5s ease-in-out infinite;
   margin: 0;
+}
+
+/* Skeleton Loader */
+.skeleton-loader {
+  width: 100%;
+}
+
+.skeleton-line {
+  background: linear-gradient(
+    90deg,
+    #e5e7eb 25%,
+    #f0f1f3 50%,
+    #e5e7eb 75%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+  border-radius: 4px;
+  display: block;
 }
 
 /* Error Box */
@@ -133,7 +164,17 @@ main {
 
 /* Sections */
 .section {
-  margin-bottom: 25px;
+  margin-bottom: 28px;
+  background-color: var(--bg-white);
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  transition: all 0.2s ease;
+}
+
+.section:hover {
+  border-color: var(--accent-color);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.08);
 }
 
 .section-header {
@@ -144,8 +185,8 @@ main {
 }
 
 .section h2 {
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 700;
   color: var(--primary-color);
   display: flex;
   align-items: center;
@@ -156,40 +197,39 @@ main {
 .btn-copy {
   background: none;
   border: none;
-  font-size: 18px;
+  font-size: 16px;
   cursor: pointer;
-  padding: 4px 8px;
-  transition: transform 0.2s ease;
+  padding: 6px 10px;
+  transition: all 0.2s ease;
+  border-radius: 4px;
 }
 
 .btn-copy:hover {
-  transform: scale(1.2);
-}
-
-.btn-copy:active {
-  transform: scale(0.95);
+  transform: scale(1.15);
+  background-color: var(--accent-light);
 }
 
 /* Output Boxes */
 .output-box {
-  background-color: white;
+  background-color: var(--bg-white);
   border: 1px solid var(--border-color);
-  border-radius: 6px;
-  padding: 15px;
+  border-radius: 8px;
+  padding: 16px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 13px;
-  line-height: 1.6;
-  max-height: 250px;
+  font-size: 14px;
+  line-height: 1.7;
+  max-height: 220px;
   overflow-y: auto;
   color: var(--text-color);
 }
 
 .output-box code {
-  background-color: var(--bg-light);
-  padding: 2px 6px;
-  border-radius: 3px;
+  background-color: #f1f5f9;
+  padding: 3px 7px;
+  border-radius: 4px;
   font-family: 'Courier New', monospace;
   font-size: 12px;
+  color: #d63384;
 }
 
 .output-box strong {
@@ -224,32 +264,42 @@ main {
 /* Analysis Buttons */
 .analysis-buttons {
   display: flex;
-  gap: 8px;
-  margin-bottom: 20px;
+  gap: 10px;
+  margin-bottom: 24px;
   flex-wrap: wrap;
+  background-color: var(--bg-white);
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
 }
 
 .btn-type {
-  padding: 8px 14px;
+  padding: 10px 16px;
   border: 2px solid var(--border-color);
   border-radius: 6px;
   background-color: white;
   color: var(--text-color);
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  flex: 1;
+  min-width: 100px;
+  text-align: center;
 }
 
 .btn-type:hover {
   border-color: var(--accent-color);
   color: var(--accent-color);
+  background-color: var(--accent-light);
+  transform: translateY(-1px);
 }
 
 .btn-type.active {
-  background-color: var(--accent-color);
+  background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
   color: white;
   border-color: var(--accent-color);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
 /* Flowchart Section */
@@ -300,12 +350,15 @@ main {
 }
 
 .mermaid-container {
-  background-color: #f5f5f5;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
   border: 1px solid var(--border-color);
-  border-radius: 6px;
-  padding: 0;
+  border-radius: 8px;
+  padding: 16px;
   overflow-x: auto;
   min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .code-output {
@@ -401,6 +454,76 @@ footer {
 .footer-text {
   font-size: 12px;
   color: var(--text-secondary);
+}
+
+/* History Panel */
+.history-panel {
+  margin-top: 30px;
+  padding: 16px;
+  background-color: var(--bg-white);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+}
+
+.history-panel h3 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary-color);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.history-item {
+  padding: 8px 12px;
+  background-color: var(--bg-light);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--text-color);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.history-item:hover {
+  background-color: var(--accent-light);
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+  transform: translateX(2px);
+}
+
+.history-item-text {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 11px;
+}
+
+.history-item-time {
+  font-size: 10px;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.history-empty {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 12px;
+  padding: 16px;
 }
 
 /* Scrollbar Styling */

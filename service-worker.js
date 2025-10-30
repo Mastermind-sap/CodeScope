@@ -21,21 +21,21 @@ chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
     id: "analyze-summary",
     parentId: "code-analyzer-menu",
-    title: "📝 Summary Only",
+    title: "📝 Summary",
     contexts: ["selection"],
   });
 
   chrome.contextMenus.create({
     id: "analyze-complexity",
     parentId: "code-analyzer-menu",
-    title: "⚙️ Complexity Only",
+    title: "⚙️ Complexity",
     contexts: ["selection"],
   });
 
   chrome.contextMenus.create({
     id: "analyze-flowchart",
     parentId: "code-analyzer-menu",
-    title: "📊 Flowchart Only",
+    title: "📊 Flowchart",
     contexts: ["selection"],
   });
 });
@@ -59,12 +59,18 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
   );
 
   // Store the selected code and analysis type in local storage (persistent)
+  // Mark forceNewAnalysis as true so popup knows to run fresh analysis
   chrome.storage.local.set({
     selectedCode: selectedCode,
     analysisType: analysisType,
+    forceNewAnalysis: true,
     timestamp: Date.now(),
   });
 
-  // Open the popup window
-  chrome.action.openPopup();
+  // Open the popup window using chrome.action.openPopup()
+  // This will open popup if not already open, or focus it if already open
+  chrome.action.openPopup?.().catch((err) => {
+    console.warn("Could not open popup directly:", err);
+    // Popup will still get the data from storage when user opens it manually
+  });
 });

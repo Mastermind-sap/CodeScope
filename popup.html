@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Code AI Analyzer</title>
+  <title>CodeScope</title>
   <link rel="stylesheet" href="styles.css">
   <style>
     html {
@@ -15,18 +15,12 @@
 <body>
   <div class="container">
     <header>
-      <h1>🚀 Code AI Analyzer</h1>
-      <p class="subtitle">Powered by Chrome's Built-in AI</p>
+      <h1>🔎 CodeScope</h1>
+      <p class="subtitle">AI-Powered Code Intelligence</p>
     </header>
 
     <main>
-      <!-- Status/Loading Section -->
-      <div id="status" class="status hidden">
-        <div class="spinner"></div>
-        <p>Analyzing code...</p>
-      </div>
-
-      <!-- Error Section -->
+      <!-- Global Error Section -->
       <div id="error" class="error-box hidden"></div>
 
       <!-- Results Section -->
@@ -43,34 +37,44 @@
         <!-- Summary Section -->
         <section class="section">
           <div class="section-header">
-            <h2>📝 Code Summary</h2>
-            <button id="copy-summary" class="btn-copy" title="Copy summary text">📋</button>
+            <h2>📝 Summary</h2>
+            <button id="copy-summary" class="btn-copy" title="Copy summary">📋</button>
           </div>
           <div id="summary-output" class="output-box">
-            No summary available
+            <div class="skeleton-loader">
+              <div class="skeleton-line" style="width: 100%; height: 16px; margin-bottom: 10px;"></div>
+              <div class="skeleton-line" style="width: 95%; height: 16px; margin-bottom: 10px;"></div>
+              <div class="skeleton-line" style="width: 90%; height: 16px;"></div>
+            </div>
           </div>
         </section>
 
         <!-- Complexity Section -->
         <section class="section">
           <div class="section-header">
-            <h2>⚙️ Code Complexity</h2>
-            <button id="copy-complexity" class="btn-copy" title="Copy complexity analysis">📋</button>
+            <h2>⚙️ Complexity</h2>
+            <button id="copy-complexity" class="btn-copy" title="Copy analysis">📋</button>
           </div>
           <div id="complexity-output" class="output-box">
-            No complexity analysis available
+            <div class="skeleton-loader">
+              <div class="skeleton-line" style="width: 100%; height: 16px; margin-bottom: 10px;"></div>
+              <div class="skeleton-line" style="width: 95%; height: 16px; margin-bottom: 10px;"></div>
+              <div class="skeleton-line" style="width: 90%; height: 16px;"></div>
+            </div>
           </div>
         </section>
 
         <!-- Flowchart Section -->
         <section class="section">
           <div class="section-header">
-            <h2>📊 Flowchart (Mermaid)</h2>
-            <button id="copy-mermaid" class="btn-copy" title="Copy mermaid code">📋</button>
+            <h2>📊 Flowchart</h2>
+            <button id="copy-mermaid" class="btn-copy" title="Copy code">📋</button>
           </div>
           <div class="mermaid-container" id="flowchart-output">
-            graph TD
-              A[Loading...]
+            <div class="skeleton-loader">
+              <div class="skeleton-line" style="width: 80%; height: 20px; margin-bottom: 15px;"></div>
+              <div class="skeleton-line" style="width: 100%; height: 100px;"></div>
+            </div>
           </div>
         </section>
 
@@ -78,26 +82,35 @@
         <div id="copy-feedback" class="feedback hidden">
           ✓ Copied to clipboard!
         </div>
+
+        <!-- History Panel -->
+        <div id="history-panel" class="history-panel hidden">
+          <h3>📜 Recent Searches</h3>
+          <div id="history-list" class="history-list"></div>
+        </div>
       </div>
 
       <!-- Initial State -->
       <div id="initial-state" class="initial-state">
         <div class="instruction-box">
-          <h3>👋 Welcome to Code AI Analyzer</h3>
-          <p>To get started:</p>
+          <h3>👋 Welcome to CodeScope</h3>
+          <p>Quick Start Guide:</p>
           <ol>
-            <li>Go to any webpage with code (GitHub, blogs, etc.)</li>
-            <li>Select/highlight some code</li>
-            <li>Right-click and choose <strong>"Analyze Code with AI"</strong></li>
-            <li>The analysis will appear here!</li>
+            <li>Navigate to any webpage with code (GitHub, CodePen, etc.)</li>
+            <li>Select and highlight some code</li>
+            <li>Right-click → <strong>"Analyze Code with AI"</strong></li>
+            <li>View detailed analysis instantly!</li>
           </ol>
-          <p class="note">⚠️ Note: This requires Chrome 140+ with AI APIs enabled. Go to <strong>chrome://flags/#prompt-api-for-gemini-nano-multimodal-input</strong> and set to Enabled. Device needs: 22GB free space, 16GB RAM, 4+ CPU cores.</p>
+          <p class="note">✨ Features: Code summaries, Big O complexity analysis, and visual flowcharts powered by Chrome's on-device AI model</p>
+          <p class="note">⚠️ First time? Make sure to enable the AI model:
+            <br>• chrome://settings/ai → Enable "Use AI"
+            <br>• chrome://components → Update "On-Device Model"</p>
         </div>
       </div>
     </main>
 
     <footer>
-      <p class="footer-text">Built for Google Chrome Built-in AI Challenge 2025</p>
+      <p class="footer-text">CodeScope v1.0 • Google Chrome Built-in AI Challenge 2025</p>
     </footer>
   </div>
 
@@ -105,8 +118,5 @@
   <script src="popup.js"></script>
   <!-- Mermaid.js for flowchart rendering -->
   <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
-  <script>
-    mermaid.initialize({ startOnLoad: true, theme: 'default' });
-  </script>
 </body>
 </html>

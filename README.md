@@ -115,8 +115,7 @@ chrome-extension/
 │   ├── icon-48.png
 │   ├── icon-128.png
 │   └── icon-256.png
-├── README.md               # This file
-└── ARCHITECTURE.md         # Technical details
+└── README.md               # This file
 ```
 
 ## Technologies
@@ -129,33 +128,3 @@ chrome-extension/
 | **APIs** | Summarizer API, Prompt API |
 | **UI** | Vanilla HTML/CSS/JavaScript |
 | **Build** | Zero-config (no build step) |
-
-## Development
-
-### Modifying Code
-Edit files directly and reload in `chrome://extensions` to see changes.
-
-### Debugging
-1. Right-click extension popup → **Inspect**
-2. Check **Console** tab for logs and errors
-3. Background script logs: `chrome://extensions` → Extension → **Service Worker**
-
-## Chrome Built-in AI Documentation
-
-- [Chrome AI API Blog](https://developer.chrome.com/blog/ai/)
-- [Prompt API Docs](https://developer.chrome.com/docs/ai/prompt-api)
-- [Summarizer API Docs](https://developer.chrome.com/docs/ai/summarizer-api)
-
-## License
-
-MIT License - See LICENSE file for details
-
-## Challenge Information
-
-**Google Chrome Built-in AI Challenge 2025**  
-Deadline: November 1, 2025 @ 12:15 PM GMT+5:30  
-Status: ✅ Production Ready
-
----
-
-**Need help?** Check console logs in DevTools for detailed error messages.
