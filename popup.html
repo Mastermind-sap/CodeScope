@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code AI Analyzer</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    html {
+      width: 900px;
+      height: 700px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🚀 Code AI Analyzer</h1>
+      <p class="subtitle">Powered by Chrome's Built-in AI</p>
+    </header>
+
+    <main>
+      <!-- Status/Loading Section -->
+      <div id="status" class="status hidden">
+        <div class="spinner"></div>
+        <p>Analyzing code...</p>
+      </div>
+
+      <!-- Error Section -->
+      <div id="error" class="error-box hidden"></div>
+
+      <!-- Results Section -->
+      <div id="results" class="results hidden">
+        
+        <!-- Analysis Type Buttons -->
+        <div class="analysis-buttons">
+          <button id="btn-summary" class="btn-type" title="Get only code summary">📝 Summary</button>
+          <button id="btn-complexity" class="btn-type" title="Get only complexity analysis">⚙️ Complexity</button>
+          <button id="btn-flowchart" class="btn-type" title="Get only flowchart">📊 Flowchart</button>
+          <button id="btn-combined" class="btn-type active" title="Get all analyses">🎯 Combined</button>
+        </div>
+
+        <!-- Summary Section -->
+        <section class="section">
+          <div class="section-header">
+            <h2>📝 Code Summary</h2>
+            <button id="copy-summary" class="btn-copy" title="Copy summary text">📋</button>
+          </div>
+          <div id="summary-output" class="output-box">
+            No summary available
+          </div>
+        </section>
+
+        <!-- Complexity Section -->
+        <section class="section">
+          <div class="section-header">
+            <h2>⚙️ Code Complexity</h2>
+            <button id="copy-complexity" class="btn-copy" title="Copy complexity analysis">📋</button>
+          </div>
+          <div id="complexity-output" class="output-box">
+            No complexity analysis available
+          </div>
+        </section>
+
+        <!-- Flowchart Section -->
+        <section class="section">
+          <div class="section-header">
+            <h2>📊 Flowchart (Mermaid)</h2>
+            <button id="copy-mermaid" class="btn-copy" title="Copy mermaid code">📋</button>
+          </div>
+          <div class="mermaid-container" id="flowchart-output">
+            graph TD
+              A[Loading...]
+          </div>
+        </section>
+
+        <!-- Copy Feedback -->
+        <div id="copy-feedback" class="feedback hidden">
+          ✓ Copied to clipboard!
+        </div>
+      </div>
+
+      <!-- Initial State -->
+      <div id="initial-state" class="initial-state">
+        <div class="instruction-box">
+          <h3>👋 Welcome to Code AI Analyzer</h3>
+          <p>To get started:</p>
+          <ol>
+            <li>Go to any webpage with code (GitHub, blogs, etc.)</li>
+            <li>Select/highlight some code</li>
+            <li>Right-click and choose <strong>"Analyze Code with AI"</strong></li>
+            <li>The analysis will appear here!</li>
+          </ol>
+          <p class="note">⚠️ Note: This requires Chrome 140+ with AI APIs enabled. Go to <strong>chrome://flags/#prompt-api-for-gemini-nano-multimodal-input</strong> and set to Enabled. Device needs: 22GB free space, 16GB RAM, 4+ CPU cores.</p>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <p class="footer-text">Built for Google Chrome Built-in AI Challenge 2025</p>
+    </footer>
+  </div>
+
+  <!-- Main Script -->
+  <script src="popup.js"></script>
+  <!-- Mermaid.js for flowchart rendering -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'default' });
+  </script>
+</body>
+</html>
