@@ -422,7 +422,11 @@ async function runAnalysis(type = "combined", forceRerun = false) {
   updateTabHighlight(type);
 
   // 1. Check for LanguageModel API
-  if (typeof LanguageModel === "undefined") {
+  if (
+    typeof LanguageModel === "undefined" ||
+    !LanguageModel.availability ||
+    !LanguageModel.create
+  ) {
     showError(
       "LanguageModel API not found. Please:\n1. Use Chrome 140+\n2. Go to chrome://flags and enable: #prompt-api-for-gemini-nano-multimodal-input\n3. Go to chrome://components and update: On-Device Model"
     );
@@ -434,17 +438,30 @@ async function runAnalysis(type = "combined", forceRerun = false) {
   // 2. Check availability
   let availability;
   try {
-    availability = await LanguageModel.availability?.();
+    availability = await LanguageModel.availability();
     console.log("Availability status:", availability);
   } catch (e) {
     console.warn("Could not check availability:", e);
+    showError("Could not check AI model availability: " + e.message);
+    return;
   }
 
-  if (availability === "no" || availability === "after-download") {
+  // Only stop if it's truly "unavailable"
+  if (availability === "unavailable" || availability === "no") {
     showError(
-      `AI Model not ready (${availability}).\n\nFIX:\n1. chrome://settings/ai → Enable "Use AI"\n2. chrome://components → Update "On-Device Model"\n3. Restart Chrome`
+      `AI Model is not available.\n\nFIX:\n1. chrome://settings/ai → Enable "Use AI"\n2. chrome://components → Update "On-Device Model"\n3. Restart Chrome`
     );
     return;
+  }
+
+  // Check if a download is needed
+  const isDownloadNeeded =
+    availability === "downloadable" ||
+    availability === "after-download" ||
+    availability === "downloading";
+
+  if (isDownloadNeeded) {
+    console.log("Model is not local. create() will trigger/await download.");
   }
 
   // 3. Get code from storage
@@ -482,15 +499,34 @@ async function runAnalysis(type = "combined", forceRerun = false) {
 
   // 5. New analysis needed
   console.log("⚡ Running new analysis...");
-
-  // Show loading only for selected tab
   showResults();
   showResultsForTab(type);
-  showLoading(`⚡ Generating ${type}...`);
+
+  // Show a specific download message if needed
+  if (isDownloadNeeded) {
+    showLoading("Downloading AI Model (can take a few min)...");
+  } else {
+    showLoading(`⚡ Generating ${type}...`);
+  }
 
   try {
-    // Create session
-    const session = await LanguageModel.create?.();
+    // Create session - This will trigger the download if needed
+    const session = await LanguageModel.create({
+      monitor(m) {
+        m.addEventListener("downloadprogress", (e) => {
+          // e.loaded is a value from 0 to 1
+          let percent = Math.floor(e.loaded * 100);
+          console.log(`Model downloading: ${percent}%`);
+
+          if (e.loaded < 1) {
+            showLoading(`Downloading AI Model: ${percent}%`);
+          } else {
+            // Download is 100%, now it's loading into memory
+            showLoading("Model downloaded. Preparing session...");
+          }
+        });
+      },
+    });
 
     if (!session) {
       showError(
@@ -500,6 +536,9 @@ async function runAnalysis(type = "combined", forceRerun = false) {
     }
 
     console.log("✓ Session created");
+
+    // Now that the download is done, show the analysis message
+    showLoading(`⚡ Generating ${type}...`);
 
     // Run combined analysis (faster)
     if (type === "combined") {
