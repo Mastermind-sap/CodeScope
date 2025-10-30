@@ -64,6 +64,10 @@ function loadCachedResultsForCode(codeHash) {
 function saveResultsToCache(codeHash, results) {
   try {
     const cacheKey = getCacheKey(codeHash);
+    // Sanitize mermaid before storing
+    if (results && results.mermaid) {
+      results.mermaid = sanitizeMermaidCode(results.mermaid);
+    }
     localStorage.setItem(cacheKey, JSON.stringify(results));
     localStorage.setItem("lastAnalyzedCodeHash", codeHash);
     localStorage.setItem("lastAnalysisTimestamp", Date.now().toString());
@@ -215,15 +219,39 @@ function renderMarkdown(text) {
   return "<p>" + html + "</p>";
 }
 
+function sanitizeMermaidCode(mermaidCode) {
+  if (!mermaidCode || typeof mermaidCode !== "string") return mermaidCode;
+  // Enclose every node label in double quotes for both [label] and {label} blocks
+  let safe = mermaidCode.replace(
+    /([A-Za-z0-9_]+)\[([^\]]+)\]/g,
+    function (match, node, label) {
+      let cleanLabel = label.replace(/"/g, "'"); // Avoid nested quotes
+      return `${node}["${cleanLabel}"]`;
+    }
+  );
+  safe = safe.replace(
+    /([A-Za-z0-9_]+)\{([^\}]+)\}/g,
+    function (match, node, label) {
+      let cleanLabel = label.replace(/"/g, "'");
+      return `${node}{"${cleanLabel}"}`;
+    }
+  );
+  return safe;
+}
+
+// Patch displayMermaidChart to sanitize before rendering
 function displayMermaidChart(mermaidCode) {
   const flowchartDiv = document.getElementById("flowchart-output");
   if (!flowchartDiv) return;
 
-  if (!mermaidCode || mermaidCode.length === 0) {
+  // Sanitize code before rendering
+  const safeMermaid = sanitizeMermaidCode(mermaidCode);
+
+  if (!safeMermaid || safeMermaid.length === 0) {
     flowchartDiv.innerHTML =
       '<div class="mermaid">graph TD\n  A[No flowchart available]</div>';
   } else {
-    flowchartDiv.innerHTML = `<div class="mermaid">${mermaidCode}</div>`;
+    flowchartDiv.innerHTML = `<div class="mermaid">${safeMermaid}</div>`;
   }
 
   // Initialize mermaid after setting content
@@ -274,7 +302,76 @@ function displayCachedResults(results) {
 
   showResults();
   showResultsForTab(selectedTab);
-  hideLoading();
+  hideSkeletonLoaders();
+}
+
+function renderHistoryPanel() {
+  // Load and display history
+  const history = loadAnalysisHistory();
+  const historyPanel = document.getElementById("history-panel");
+  const historyList = document.getElementById("history-list");
+
+  if (!historyPanel || !historyList) return;
+
+  if (history.length === 0) {
+    historyPanel.classList.add("hidden");
+    return;
+  }
+
+  historyPanel.classList.remove("hidden");
+  historyList.innerHTML = "";
+
+  history.forEach((item, index) => {
+    const timeAgo = getTimeAgo(item.timestamp);
+    const historyItem = document.createElement("div");
+    historyItem.className = "history-item";
+    historyItem.innerHTML = `
+      <div class="history-item-text" title="${item.summary}">
+        📄 ${item.summary || "Code analysis"}
+      </div>
+      <div class="history-item-time">${timeAgo}</div>
+    `;
+
+    historyItem.addEventListener("click", () => {
+      // Re-run analysis for this code hash
+      console.log("🔄 Re-running analysis for hash:", item.hash);
+      const cachedResults = loadCachedResultsForCode(item.hash);
+      if (cachedResults) {
+        currentCodeHash = item.hash;
+        displayCachedResults(cachedResults);
+        showResultsForTab(selectedTab);
+      }
+    });
+
+    historyList.appendChild(historyItem);
+  });
+
+  // Add clear history button
+  const clearBtn = document.createElement("button");
+  clearBtn.className = "btn-secondary";
+  clearBtn.textContent = "🗑️ Clear History";
+  clearBtn.style.width = "100%";
+  clearBtn.style.marginTop = "8px";
+  clearBtn.style.padding = "8px";
+  clearBtn.addEventListener("click", () => {
+    localStorage.removeItem("analysisHistory");
+    historyPanel.classList.add("hidden");
+    console.log("✓ History cleared");
+  });
+  historyList.parentElement.appendChild(clearBtn);
+}
+
+function getTimeAgo(timestamp) {
+  const now = Date.now();
+  const diff = now - timestamp;
+  const minutes = Math.floor(diff / 60000);
+  const hours = Math.floor(diff / 3600000);
+  const days = Math.floor(diff / 86400000);
+
+  if (minutes < 1) return "now";
+  if (minutes < 60) return `${minutes}m ago`;
+  if (hours < 24) return `${hours}h ago`;
+  return `${days}d ago`;
 }
 
 // ============================================================================
@@ -348,14 +445,13 @@ Provide your response as valid JSON (no markdown formatting) with these exact fi
 {
   "summary": "A concise one-paragraph summary of what this code does in 2-3 sentences",
   "complexity": "Big O analysis - start with 'Time: O(...)\\nSpace: O(...)' followed by a brief explanation",
-  "flowchart": "A Mermaid.js flowchart in 'graph TD' format that visualizes the code logic"
+  "flowchart": "A Mermaid.js (v10.9.4) flowchart in 'graph TD' format. STRICT RULES: Node names must only use letters, numbers, underscores, and spaces. Do NOT use brackets, parentheses, %, &, or any special characters in node names. Use only arrows and simple node connections. If the code contains complex logic, summarize it in plain English node names."
 }
 
 IMPORTANT:
-- Make summary clear and concise
-- Include exact Big O notation for both time and space
-- Flowchart must use proper Mermaid syntax
-- Output ONLY valid JSON, no extra text`
+- Make summary clear and concise.
+- Include exact Big O notation for both time and space.
+- Flowchart must use only valid Mermaid node names (letters, numbers, underscores, spaces), no brackets, parentheses, %, &, or special characters. Summarize complex logic in plain English node names. Output ONLY valid JSON, no extra text.`
     );
   }
 
@@ -394,7 +490,7 @@ Analysis:`
   if (analysisType === "flowchart") {
     return (
       languageHeader +
-      `Create a Mermaid.js flowchart in 'graph TD' format for this code.
+      `Create a Mermaid.js (version 10.9.4) flowchart in 'graph TD' format for this code.
 
 CODE:
 \`\`\`
@@ -402,10 +498,10 @@ ${code}
 \`\`\`
 
 Important:
-- Start with graph TD
-- Use proper Mermaid syntax: A[node] --> B{decision}
-- Include all major logic branches
-- Make it clear and readable
+- Start with graph TD.
+- STRICT RULES: Node names must only use letters, numbers, underscores, and spaces. Do NOT use brackets, parentheses, %, &, or any special characters in node names. Use only arrows and simple node connections. If the code contains complex logic, summarize it in plain English node names.
+- Include all major logic branches.
+- Make it clear and readable.
 
 Flowchart:`
     );
@@ -730,4 +826,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Start analysis
   runAnalysis(analysisType, forceRerun);
+
+  // Render history panel
+  renderHistoryPanel();
 });
