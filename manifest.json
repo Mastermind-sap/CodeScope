@@ -17,7 +17,7 @@
   },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Code AI Analyzer"
+    "default_title": "CodeScope - AI Code Analyzer"
   },
   "icons": {
     "16": "icons/icon16.png",
