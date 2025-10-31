@@ -1,10 +1,16 @@
 # CodeScope
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Version](https://img.shields.io/badge/version-1.0-green.svg)
-![Chrome](https://img.shields.io/badge/chrome-140%2B-red.svg)
-
-A production-ready Chrome extension for the **Google Chrome Built-in AI Challenge 2025** that analyzes code using Chrome's on-device AI models.
+<div align="center">
+  <img src="assets/icon.png" alt="CodeScope Logo" width="128" height="128">
+  
+  ![License](https://img.shields.io/badge/license-MIT-blue.svg)
+  ![Version](https://img.shields.io/badge/version-1.0-green.svg)
+  ![Chrome](https://img.shields.io/badge/chrome-140%2B-red.svg)
+  
+  **A production-ready Chrome extension for the Google Chrome Built-in AI Challenge 2025 that analyzes code using Chrome's on-device AI models.**
+  
+  [![Watch Demo](https://img.shields.io/badge/🎥_Watch_Demo-YouTube-red?style=for-the-badge)](https://youtu.be/0l6BC5VBtpc)
+</div>
 
 ## 📖 Description
 
@@ -97,7 +103,6 @@ CodeScope leverages Chrome's built-in AI APIs for local processing:
 - **Chrome AI APIs**: Summarizer and Prompt APIs for on-device processing
 - **Mermaid.js**: Flowchart generation and rendering
 
-For detailed technical information about Chrome APIs, data flow, and prompt engineering, see [ARCHITECTURE.md](./ARCHITECTURE.md).
 
 ## 🛠️ Troubleshooting
 
@@ -197,20 +202,52 @@ If you encounter any issues or have questions:
 2. Search existing [issues](https://github.com/Arunav47/CodeScope/issues)
 3. Create a new issue with detailed information
 
+## 📸 Screenshots & Demo
+
+### 🎬 Video Demo
+
+<p align="center">
+  <a href="https://youtu.be/0l6BC5VBtpc">
+    <img src="https://img.youtube.com/vi/0l6BC5VBtpc/maxresdefault.jpg" alt="CodeScope Demo Video" width="600">
+  </a>
+</p>
+
+<p align="center">
+  <em>👆 Click the image above to watch the full demo on YouTube</em>
+</p>
+
+### 🖼️ Application Screenshots
+
+<div align="center">
+
+#### Extension Side Panel Interface
+<img src="assets/Screenshot_20251031_233758.png" alt="CodeScope Side Panel Interface" width="600">
+
+#### AI Code Analysis in Action
+<img src="assets/Screenshot_20251031_233850.png" alt="AI Code Analysis Results" width="600">
+
+#### Flowchart Generation
+<img src="assets/Screenshot_20251031_234041.png" alt="Automatic Flowchart Generation" width="600">
+
+#### Context Menu Integration  
+<img src="assets/Screenshot_20251031_234319.png" alt="Right-click Context Menu" width="600">
+
+</div>
+
+### ✨ Key Features Demonstrated
+- **Right-click Context Menu**: Easy access to code analysis
+- **Side Panel Interface**: Clean and intuitive user experience
+- **AI-Powered Summaries**: Intelligent code explanations
+- **Interactive Flowcharts**: Visual code logic representation
+- **Complexity Analysis**: Big O notation assessment
+- **Export Capabilities**: Copy Mermaid diagrams for external use
+
 ## 🏆 Acknowledgments
 
 - Built for the **Google Chrome Built-in AI Challenge 2025**
 - Powered by Chrome's on-device AI models
 - Mermaid.js for flowchart generation
 - Chrome Extension API documentation and community
-
-## 📈 Roadmap
-
-- [ ] Support for more programming languages
-- [ ] Advanced code complexity metrics
-- [ ] Custom AI prompts and templates
-- [ ] Dark/Light theme toggle
-- [ ] Code optimization suggestions
 
 ---
 
