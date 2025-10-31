@@ -302,7 +302,6 @@ function displayCachedResults(results) {
 
   showResults();
   showResultsForTab(selectedTab);
-  hideSkeletonLoaders();
 }
 
 function renderHistoryPanel() {
