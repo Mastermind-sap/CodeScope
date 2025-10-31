@@ -282,6 +282,147 @@ function displaySummary(summaryText) {
   console.log("✓ Summary displayed");
 }
 
+// ================= Translator Integration =================
+// Translator variables
+let translator = null;
+let translatorTarget = "en"; // current target language for translation
+
+function setTranslatorStatus(visible, text) {
+  const status = document.getElementById("translator-status");
+  if (!status) return;
+  if (visible) {
+    status.style.display = "block";
+    status.textContent = text || "Translating…";
+  } else {
+    status.style.display = "none";
+    status.textContent = "";
+  }
+}
+
+async function ensureTranslator(targetLang) {
+  if (targetLang === "en") return null; // no translator needed for English
+  if (typeof Translator === "undefined") {
+    console.warn("Translator API not available in this browser");
+    return null;
+  }
+
+  if (translator && translatorTarget === targetLang) return translator;
+
+  try {
+    setTranslatorStatus(true, "Checking translator availability…");
+    const avail = await Translator.availability({
+      sourceLanguage: "en",
+      targetLanguage: targetLang,
+    });
+    console.log("Translator availability:", avail);
+
+    if (
+      avail === "downloadable" ||
+      avail === "after-download" ||
+      avail === "downloading"
+    ) {
+      setTranslatorStatus(true, "Downloading translation model…");
+    }
+
+    translator = await Translator.create({
+      sourceLanguage: "en",
+      targetLanguage: targetLang,
+      monitor(m) {
+        m.addEventListener("downloadprogress", (e) => {
+          let percent = Math.floor((e.loaded || 0) * 100);
+          setTranslatorStatus(true, `Downloading model ${percent}%`);
+        });
+      },
+    });
+
+    translatorTarget = targetLang;
+    setTranslatorStatus(false);
+    return translator;
+  } catch (e) {
+    console.warn("Could not create translator:", e);
+    setTranslatorStatus(false);
+    return null;
+  }
+}
+
+// ================= Translation Cache Helpers =================
+function getTranslationCacheKey(codeHash, lang) {
+  return `translation_${codeHash}_${lang}`;
+}
+
+function getTranslationFromCache(codeHash, lang) {
+  try {
+    const key = getTranslationCacheKey(codeHash, lang);
+    const stored = localStorage.getItem(key);
+    if (!stored) return null;
+    const payload = JSON.parse(stored);
+    // optional: verify timestamp freshness (not implemented)
+    return payload.text || null;
+  } catch (e) {
+    console.warn("Could not read translation cache:", e);
+    return null;
+  }
+}
+
+function saveTranslationToCache(codeHash, lang, text) {
+  try {
+    const key = getTranslationCacheKey(codeHash, lang);
+    const payload = { text: text, ts: Date.now() };
+    localStorage.setItem(key, JSON.stringify(payload));
+  } catch (e) {
+    console.warn("Could not save translation cache:", e);
+  }
+}
+
+async function translateAndDisplaySummary(targetLang) {
+  const summaryElem = document.getElementById("summary-output");
+  if (!summaryElem) return;
+  // If no summary generated yet, nothing to translate
+  if (!globalSummary || globalSummary.trim().length === 0) return;
+
+  if (targetLang === "en") {
+    // Show original English summary
+    displaySummary(globalSummary);
+    return;
+  }
+
+  // Try cache first
+  const cached = getTranslationFromCache(currentCodeHash, targetLang);
+  if (cached) {
+    const html = renderMarkdown(cached);
+    summaryElem.innerHTML = html;
+    console.log("✓ Loaded translated summary from cache for", targetLang);
+    return;
+  }
+
+  const tr = await ensureTranslator(targetLang);
+  if (!tr) {
+    // Translator not available - show message inline
+    setTranslatorStatus(true, "Translation not available in this browser");
+    setTimeout(() => setTranslatorStatus(false), 3000);
+    return;
+  }
+
+  try {
+    setTranslatorStatus(true, "Translating…");
+    const translated = await tr.translate(globalSummary);
+    // Save to cache
+    try {
+      saveTranslationToCache(currentCodeHash, targetLang, translated);
+    } catch (e) {
+      console.warn("Could not cache translation:", e);
+    }
+    // Render the translated text (it's plain text; use renderMarkdown for formatting)
+    const html = renderMarkdown(translated);
+    summaryElem.innerHTML = html;
+    setTranslatorStatus(false);
+  } catch (e) {
+    console.error("Translation failed:", e);
+    setTranslatorStatus(true, "Translation failed");
+    setTimeout(() => setTranslatorStatus(false), 2500);
+  }
+}
+
 function displayCachedResults(results) {
   console.log("🔄 Displaying cached results (instant)...");
 
@@ -775,12 +916,19 @@ document.addEventListener("DOMContentLoaded", async () => {
   const copySummaryBtn = document.getElementById("copy-summary");
   if (copySummaryBtn) {
     copySummaryBtn.addEventListener("click", async () => {
-      if (!globalSummary) {
+      // Copy displayed summary (translated if selected) or original
+      const langSelect = document.getElementById("summary-lang-select");
+      let textToCopy = globalSummary || "";
+      if (langSelect && langSelect.value !== "en") {
+        const summaryElem = document.getElementById("summary-output");
+        if (summaryElem) textToCopy = summaryElem.innerText || textToCopy;
+      }
+      if (!textToCopy) {
         alert("No summary to copy.");
         return;
       }
       try {
-        await navigator.clipboard.writeText(globalSummary);
+        await navigator.clipboard.writeText(textToCopy);
         const originalText = copySummaryBtn.textContent;
         copySummaryBtn.textContent = "✓ Copied!";
         setTimeout(() => {
@@ -837,4 +985,22 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Render history panel
   renderHistoryPanel();
+
+  // Setup translation dropdown
+  const langSelect = document.getElementById("summary-lang-select");
+  if (langSelect) {
+    // default to English
+    langSelect.value = "en";
+    langSelect.addEventListener("change", async (e) => {
+      const target = e.target.value || "en";
+      await translateAndDisplaySummary(target);
+    });
+  }
+
+  // If a summary is already present (from cache), translate it to selected language
+  const selectedLang =
+    (document.getElementById("summary-lang-select") || {}).value || "en";
+  if (selectedLang && selectedLang !== "en") {
+    translateAndDisplaySummary(selectedLang);
+  }
 });
