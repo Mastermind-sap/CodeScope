@@ -445,7 +445,18 @@ Provide your response as valid JSON (no markdown formatting) with these exact fi
 {
   "summary": "A concise one-paragraph summary of what this code does in 2-3 sentences",
   "complexity": "Big O analysis - start with 'Time: O(...)\\nSpace: O(...)' followed by a brief explanation",
-  "flowchart": "A Mermaid.js (v10.9.4) flowchart in 'graph TD' format. STRICT RULES: Node names must only use letters, numbers, underscores, and spaces. Do NOT use brackets, parentheses, %, &, or any special characters in node names. Use only arrows and simple node connections. If the code contains complex logic, summarize it in plain English node names."
+  "flowchart": "A Mermaid.js (v10.9.4) flowchart in 'graph TD' format.STRICT RULES: 1. Node names must only contain letters, numbers, underscores, and spaces.
+2. Do NOT use brackets, parentheses, %, &, or any other special characters in node names.
+3. Use arrows and simple node connections only (no nested or complex syntax).
+4. If the code contains complex expressions, summarize them in plain English (e.g., write “check if x is greater than y” instead of “if (x > y)”, "value of the ith position in array" instead of "array[i]", "call function p for i, j" instead of "p(i, j)", "loop from a to b" instead of "for (let i = a; i < b; i++)").
+5. Include all major logic branches (conditions, loops, returns, etc.).
+6. Keep the diagram clean, simple, and easy to understand.
+7. Example node description style:
+- Start process
+- Check if input is valid
+- Set ith value of array to zero
+- Print result and end
+  
 }
 
 IMPORTANT:
@@ -499,9 +510,7 @@ ${code}
 
 Important:
 - Start with graph TD.
-- STRICT RULES: Node names must only use letters, numbers, underscores, and spaces. Do NOT use brackets, parentheses, %, &, or any special characters in node names. Use only arrows and simple node connections. If the code contains complex logic, summarize it in plain English node names.
-- Include all major logic branches.
-- Make it clear and readable.
+- STRICT RULES: {1. Node names must only contain letters, numbers, underscores, and spaces., 2. Do NOT use brackets, parentheses, %, &, or any other special characters in node names., 3. Use arrows and simple node connections only (no nested or complex syntax)., 4. If the code contains complex expressions, summarize them in plain English (e.g., write “check if x is greater than y” instead of “if (x > y)”, "value of the ith position in array" instead of "array[i]", "call function p for i, j" instead of "p(i, j)", "loop from a to b" instead of "for (let i = a; i < b; i++)", "print the value at i, j of mat" instead of "cout << mat[i][j]")., 5. Include all major logic branches (conditions, loops, returns, etc.)., 6. Keep the diagram clean, simple, and easy to understand., 7. Example node description style:- Start process, - Check if input is valid, - Set ith value of array to zero, - Print result and end}
 
 Flowchart:`
     );

@@ -4,12 +4,14 @@ A production-ready Chrome extension for the **Google Chrome Built-in AI Challeng
 
 ## Features
 
-✅ **Code Summarization** - AI-powered summaries using Chrome's Summarizer API  
+✅ **Code Summarization** - AI-powered summaries using Chrome's built-in AI  
 ✅ **Flowchart Generation** - Automatic Mermaid diagram visualization of code logic  
 ✅ **Complexity Analysis** - Big O time and space complexity assessment  
 ✅ **Copy Flowchart Code** - Export Mermaid code for external rendering  
-✅ **Download Flowchart** - Save flowchart as SVG  
+✅ **Side Panel Interface** - Sleek side panel UI for better user experience  
+✅ **Scrollable Diagrams** - Large flowcharts scroll smoothly within the interface  
 ✅ **One-Click Analysis** - Right-click context menu integration  
+✅ **Responsive Design** - Optimized layout for side panel viewing  
 
 ## Prerequisites
 
