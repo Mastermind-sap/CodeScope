@@ -4,6 +4,19 @@
   box-sizing: border-box;
 }
 
+/* Smooth scrolling for better UX */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Prevent text selection on UI elements */
+button, .btn-type, .btn-copy {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
 :root {
   --primary-color: #0f172a;
   --accent-color: #3b82f6;
@@ -19,38 +32,45 @@
 }
 
 html {
-  width: 900px;
-  height: 700px;
+  width: 100%;
+  height: 100vh;
+  min-height: 100vh;
+  overflow: hidden;
 }
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   width: 100%;
-  height: 100%;
+  height: 100vh;
+  min-height: 100vh;
   background-color: var(--bg-light);
   color: var(--text-color);
   line-height: 1.6;
   margin: 0;
   padding: 0;
+  overflow: hidden;
 }
 
 .container {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 100vh;
   width: 100%;
+  position: relative;
+  overflow: hidden;
 }
 
 header {
   background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
   color: white;
-  padding: 24px 20px;
+  padding: 16px 20px;
   text-align: center;
   box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+  flex-shrink: 0;
 }
 
 header h1 {
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 800;
   margin-bottom: 4px;
   letter-spacing: -0.5px;
@@ -64,8 +84,10 @@ header .subtitle {
 
 main {
   flex: 1;
-  padding: 20px;
+  padding: 16px;
   overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0; /* Allow flex item to shrink */
 }
 
 /* Status and Loading */
@@ -164,9 +186,9 @@ main {
 
 /* Sections */
 .section {
-  margin-bottom: 28px;
+  margin-bottom: 20px;
   background-color: var(--bg-white);
-  padding: 16px;
+  padding: 12px;
   border-radius: 8px;
   border: 1px solid var(--border-color);
   transition: all 0.2s ease;
@@ -214,11 +236,11 @@ main {
   background-color: var(--bg-white);
   border: 1px solid var(--border-color);
   border-radius: 8px;
-  padding: 16px;
+  padding: 12px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 14px;
-  line-height: 1.7;
-  max-height: 220px;
+  font-size: 13px;
+  line-height: 1.6;
+  max-height: 300px;
   overflow-y: auto;
   color: var(--text-color);
 }
@@ -263,10 +285,10 @@ main {
 
 /* Analysis Buttons */
 .analysis-buttons {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 24px;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 20px;
   background-color: var(--bg-white);
   padding: 12px;
   border-radius: 8px;
@@ -274,17 +296,15 @@ main {
 }
 
 .btn-type {
-  padding: 10px 16px;
+  padding: 8px 12px;
   border: 2px solid var(--border-color);
   border-radius: 6px;
   background-color: white;
   color: var(--text-color);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  flex: 1;
-  min-width: 100px;
   text-align: center;
 }
 
@@ -353,12 +373,36 @@ main {
   background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
   border: 1px solid var(--border-color);
   border-radius: 8px;
-  padding: 16px;
-  overflow-x: auto;
-  min-height: 200px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: 12px;
+  overflow: auto;
+  min-height: 250px;
+  max-height: 500px;
+  display: block;
+  position: relative;
+}
+
+.mermaid-container::before {
+  content: "📊 Scroll to view entire diagram";
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-size: 10px;
+  color: var(--text-secondary);
+  opacity: 0.7;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.mermaid-container .mermaid {
+  min-width: max-content;
+  display: block;
+  position: relative;
+  z-index: 2;
+}
+
+/* Hide scroll hint when content fits */
+.mermaid-container:not([data-scrollable])::before {
+  display: none;
 }
 
 .code-output {
@@ -445,10 +489,11 @@ main {
 
 /* Footer */
 footer {
-  padding: 15px 20px;
+  padding: 12px 16px;
   background-color: white;
   border-top: 1px solid var(--border-color);
   text-align: center;
+  flex-shrink: 0;
 }
 
 .footer-text {
@@ -530,20 +575,22 @@ footer {
 main::-webkit-scrollbar,
 .output-box::-webkit-scrollbar,
 .mermaid-container::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
 
 main::-webkit-scrollbar-track,
 .output-box::-webkit-scrollbar-track,
 .mermaid-container::-webkit-scrollbar-track {
   background: var(--bg-light);
+  border-radius: 4px;
 }
 
 main::-webkit-scrollbar-thumb,
 .output-box::-webkit-scrollbar-thumb,
 .mermaid-container::-webkit-scrollbar-thumb {
   background: var(--border-color);
-  border-radius: 3px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
 }
 
 main::-webkit-scrollbar-thumb:hover,
@@ -552,17 +599,22 @@ main::-webkit-scrollbar-thumb:hover,
   background: var(--text-secondary);
 }
 
-/* Responsive */
-@media (max-width: 900px) {
-  body {
-    width: 100%;
-  }
+/* Ensure scrollable areas are properly configured */
+.mermaid-container::-webkit-scrollbar-corner {
+  background: var(--bg-light);
+}
 
-  header h1 {
-    font-size: 20px;
+/* Side panel responsive design */
+@media (max-width: 400px) {
+  .analysis-buttons {
+    grid-template-columns: 1fr;
   }
-
-  .section h2 {
-    font-size: 16px;
+  
+  main {
+    padding: 12px;
+  }
+  
+  .section {
+    padding: 10px;
   }
 }

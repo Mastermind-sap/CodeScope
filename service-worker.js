@@ -40,6 +40,13 @@ chrome.runtime.onInstalled.addListener(() => {
   });
 });
 
+// Listen for extension icon clicks to open side panel
+chrome.action.onClicked.addListener((tab) => {
+  chrome.sidePanel.open({ tabId: tab.id }).catch((err) => {
+    console.warn("Could not open side panel from action click:", err);
+  });
+});
+
 // Listen for context menu clicks
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   const selectedCode = info.selectionText;
@@ -59,7 +66,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
   );
 
   // Store the selected code and analysis type in local storage (persistent)
-  // Mark forceNewAnalysis as true so popup knows to run fresh analysis
+  // Mark forceNewAnalysis as true so side panel knows to run fresh analysis
   chrome.storage.local.set({
     selectedCode: selectedCode,
     analysisType: analysisType,
@@ -67,10 +74,9 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     timestamp: Date.now(),
   });
 
-  // Open the popup window using chrome.action.openPopup()
-  // This will open popup if not already open, or focus it if already open
-  chrome.action.openPopup?.().catch((err) => {
-    console.warn("Could not open popup directly:", err);
-    // Popup will still get the data from storage when user opens it manually
+  // Open the side panel for the current tab
+  chrome.sidePanel.open({ tabId: tab.id }).catch((err) => {
+    console.warn("Could not open side panel:", err);
+    // Side panel will still get the data from storage when user opens it manually
   });
 });
